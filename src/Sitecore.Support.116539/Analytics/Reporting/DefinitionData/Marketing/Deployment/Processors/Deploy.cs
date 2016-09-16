@@ -56,7 +56,15 @@
         return;
       }   
 
-      if (!DeploymentManager.Default.DeployAsync<TDefinition>(item.ID, item.Language.CultureInfo).Wait(Timeout))
+      var deployTask = DeploymentManager.Default.DeployAsync<TDefinition>(item.ID, item.Language.CultureInfo);
+      Assert.IsNotNull(deployTask, nameof(deployTask));
+
+      if (Timeout.Ticks == 0)
+      {
+        return;
+      }
+
+      if (!deployTask.Wait(Timeout))
       {
         throw new TimeoutException($"Save operation for definition id:[{item.ID}] could not be completed within specified timeframe. It will be re-run in the background.");
       }

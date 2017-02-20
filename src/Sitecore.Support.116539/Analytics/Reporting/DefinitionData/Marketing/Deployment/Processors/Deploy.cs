@@ -1,19 +1,20 @@
 ﻿namespace Sitecore.Support.Analytics.Reporting.DefinitionData.Marketing.Deployment.Processors
 {
-  using System;
-  using Sitecore.Analytics.Pipelines.DeployDefinition;
-  using Sitecore.Analytics.Reporting.DefinitionData.Marketing.Deployment;
-  using Sitecore.Data;
-  using Sitecore.Data.Items;
-  using Sitecore.Data.Managers;
-  using Sitecore.Data.Templates;
-  using Sitecore.Diagnostics;
-  using Sitecore.Marketing.Definitions;
-  using Sitecore.Marketing.Definitions.Campaigns;
-  using Sitecore.Marketing.Definitions.Goals;
-  using Sitecore.Marketing.Definitions.Outcomes.Model;
+    using System;
+    using Sitecore.Analytics.Pipelines.DeployDefinition;
+    using Sitecore.Analytics.Reporting.DefinitionData.Marketing.Deployment;
+    using Sitecore.Data;
+    using Sitecore.Data.Items;
+    using Sitecore.Data.Managers;
+    using Sitecore.Data.Templates;
+    using Sitecore.Diagnostics;
+    using Sitecore.Marketing.Definitions;
+    using Sitecore.Marketing.Definitions.Campaigns;
+    using Sitecore.Marketing.Definitions.Goals;
+    using Sitecore.Marketing.Definitions.Outcomes.Model;
+    using Sitecore.Marketing.Definitions.Funnels;
 
-  public class Deploy : Sitecore.Analytics.Reporting.DefinitionData.Marketing.Deployment.Processors.Deploy
+    public class Deploy : Sitecore.Analytics.Reporting.DefinitionData.Marketing.Deployment.Processors.Deploy
   {
     private static readonly ID CampaignActivity = Sitecore.Marketing.Definitions.Campaigns.WellKnownIdentifiers.CampaignActivityDefinitionTemplateId;
     private static readonly ID Goal = Sitecore.Marketing.Definitions.Goals.WellKnownIdentifiers.GoalDefinitionTemplateId;
@@ -34,16 +35,14 @@
 
     public override void Process(DeployDefinitionArgs args)
     {
-      Assert.ArgumentNotNull(args, nameof(args));
-
-      var item = args.Item;
-      var template = TemplateManager.GetTemplate(item);
-
-      // TODO: do actions concurrently and wait for all at the same time
-      this.DeployItem<ICampaignActivityDefinition>(item, template, CampaignActivity);                                
-      this.DeployItem<IGoalDefinition>(item, template, Goal);                                                
-      this.DeployItem<IOutcomeDefinition>(item, template, Outcome);
-    }
+            Assert.ArgumentNotNull(args, "args");
+            Item item = args.Item;
+            Template template = TemplateManager.GetTemplate(item);
+            this.DeployItem<ICampaignActivityDefinition>(item, template, Sitecore.Marketing.Definitions.Campaigns.WellKnownIdentifiers.CampaignActivityDefinitionTemplateId);
+            this.DeployItem<IGoalDefinition>(item, template, Sitecore.Marketing.Definitions.Goals.WellKnownIdentifiers.GoalDefinitionTemplateId);
+            this.DeployItem<IOutcomeDefinition>(item, template, Sitecore.Marketing.Definitions.Outcomes.WellKnownIdentifiers.OutcomeDefinitionTemplateId);
+            this.DeployItem<IFunnelDefinition>(item, template, Sitecore.Marketing.Definitions.Funnels.WellKnownIdentifiers.FunnelDefinitionTemplateId);
+        }
 
     protected new void DeployItem<TDefinition>(Item item, Template itemTemplate, ID expectedTemplateId) where TDefinition : IDefinition
     {
